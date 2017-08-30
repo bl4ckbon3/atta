@@ -10,11 +10,12 @@
         }
     ],
     "require": {
-        "symfony/console": "^3.3"
+        "symfony/console": "^3.3",
+        "spatie/db-dumper": "^2.7"
     },
     "autoload": {
-        "psr4": {
-            "":"src/"
+        "psr-4": {
+            "Atta\\": "src/"
         }
     }
 }
