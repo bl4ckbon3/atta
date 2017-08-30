@@ -12,6 +12,7 @@ $application->addCommands(
         new Atta\Console\PostgresWorkerConsole(),
         new Atta\Console\MysqlWorkerConsole(),
         new Atta\Console\MongoWorkerConsole(),
+        new Atta\Console\BackupComposerConsole(),
     ]
 );
 

@@ -11,7 +11,12 @@
     ],
     "require": {
         "symfony/console": "^3.3",
-        "spatie/db-dumper": "^2.7"
+        "spatie/db-dumper": "^2.7",
+        "symfony/config": "^3.3",
+        "symfony/expression-language": "^3.3",
+        "symfony/yaml": "^3.3",
+        "symfony/finder": "^3.3",
+        "mtdowling/cron-expression": "^1.2"
     },
     "autoload": {
         "psr-4": {
