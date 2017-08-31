@@ -38,6 +38,7 @@ class BackupConfiguration implements ConfigurationInterface
                         ->defaultValue('now.format("Ymd_His")')
                     ->end()
                     ->arrayNode('database')
+                        ->useAttributeAsKey('name')
                         ->arrayPrototype()
                             ->children()
                                 ->scalarNode('engine')->isRequired()->end()
