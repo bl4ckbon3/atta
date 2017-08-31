@@ -218,6 +218,7 @@ class BackupComposerConsole extends Command
     {
         $language = new ExpressionLanguage();
         $path = realpath($path);
+        $now = new \DateTime('now', new \DateTimeZone('Asia/Jakarta'));
         
         if (true === $splitDirectory) {
             $path = $path . DIRECTORY_SEPARATOR . $params['database'];
@@ -226,7 +227,7 @@ class BackupComposerConsole extends Command
             }
         }
         
-        $file = $language->evaluate($format, array_merge($params, ['now' => new \DateTime()]));
+        $file = $language->evaluate($format, array_merge($params, ['now' => $now]));
         $file = sprintf(
             '%s_%s_%s_%s.%s',
             $params['app'],
