@@ -5,7 +5,7 @@ require __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
 
-$application = new Application('Atta', '0.1.0');
+$application = new Application('Atta', '@package_version@');
 
 $application->addCommands(
     [
