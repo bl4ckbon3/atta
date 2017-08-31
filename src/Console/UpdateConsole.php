@@ -12,6 +12,7 @@ namespace Atta\Console;
 
 use Herrera\Phar\Update\Manager;
 use Herrera\Phar\Update\Manifest;
+use Herrera\Version\Parser;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,7 +45,27 @@ class UpdateConsole extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln('Checking...');
+        $currentVersion = $this->getApplication()->getVersion();
         $manager = new Manager(Manifest::loadFile(self::MANIFEST_FILE));
-        $manager->update($this->getApplication()->getVersion(), true);
+    
+        $version = Parser::toVersion($currentVersion);
+    
+        if (null !== ($update = $manager->getManifest()->findRecent(
+                $version,
+                true,
+                false
+            ))) {
+            $output->writeln(
+                sprintf(
+                    'Updating to version <info>%s</info>',
+                    (string) $update->getVersion()
+                )
+            );
+            $update->getFile();
+            $update->copyTo($manager->getRunningFile());
+        } else {
+            $output->writeln(sprintf('<info>You already using atta version %s</info>', $currentVersion));
+        }
     }
 }
