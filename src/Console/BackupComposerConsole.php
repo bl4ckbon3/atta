@@ -59,7 +59,12 @@ class BackupComposerConsole extends Command
                     'engine'   => $database['engine'],
                 ];
                 
-                $file = $this->getOutputFile($app['destination'], $app['output_format'], $params);
+                $file = $this->getOutputFile(
+                    $app['destination'],
+                    $app['output_format'],
+                    $app['split_directory'],
+                    $params
+                );
                 
                 $event = $scheduler->call(
                     function () use ($file, $database, $output, $app, $name, $params) {
@@ -112,8 +117,17 @@ class BackupComposerConsole extends Command
         
         $input = new ArrayInput($arguments);
         $command->run($input, $output);
+        
+        @chmod($file, 0777);
     }
     
+    /**
+     * @param int    $keep
+     * @param string $app
+     * @param string $engine
+     * @param string $ext
+     * @param string $path
+     */
     private function purgeBackups($keep, $app, $engine, $ext, $path)
     {
         if ($keep) {
@@ -195,14 +209,23 @@ class BackupComposerConsole extends Command
     /**
      * @param string $path
      * @param string $format
+     * @param bool   $splitDirectory
      * @param array  $params
      *
      * @return string
      */
-    private function getOutputFile($path, $format, array $params)
+    private function getOutputFile($path, $format, $splitDirectory, array $params)
     {
         $language = new ExpressionLanguage();
         $path = realpath($path);
+        
+        if (true === $splitDirectory) {
+            $path = $path . DIRECTORY_SEPARATOR . $params['database'];
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+        }
+        
         $file = $language->evaluate($format, array_merge($params, ['now' => new \DateTime()]));
         $file = sprintf(
             '%s_%s_%s_%s.%s',

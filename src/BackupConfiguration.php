@@ -34,6 +34,7 @@ class BackupConfiguration implements ConfigurationInterface
                     ->scalarNode('destination')->isRequired()->end()
                     ->scalarNode('schedule')->defaultNull()->end()
                     ->integerNode('keep')->defaultNull()->end()
+                    ->booleanNode('split_directory')->defaultFalse()->end()
                     ->scalarNode('output_format')
                         ->defaultValue('now.format("Ymd_His")')
                     ->end()
