@@ -51,25 +51,28 @@ class BackupComposerConsole extends Command
         $output->writeln('');
         
         foreach ($configs as $name => $app) {
-            foreach ($app['database'] as $database) {
+            foreach ($app['database'] as $dbName => $database) {
                 $params = [
-                    'app'    => $name,
-                    'ext'    => $this->getOutputFileExt($database['engine']),
-                    'engine' => $database['engine'],
+                    'app'      => $name,
+                    'database' => $dbName,
+                    'ext'      => $this->getOutputFileExt($database['engine']),
+                    'engine'   => $database['engine'],
                 ];
                 
                 $file = $this->getOutputFile($app['destination'], $app['output_format'], $params);
                 
-                $event = $scheduler->call(function() use ($file, $database, $output, $app, $name, $params) {
-                    $this->backup($file, $database, $output);
-                    $this->purgeBackups(
-                        $app['keep'],
-                        $name,
-                        $params['engine'],
-                        $params['ext'],
-                        realpath($app['destination'])
-                    );
-                });
+                $event = $scheduler->call(
+                    function () use ($file, $database, $output, $app, $name, $params) {
+                        $this->backup($file, $database, $output);
+                        $this->purgeBackups(
+                            $app['keep'],
+                            $name,
+                            $params['engine'],
+                            $params['ext'],
+                            realpath($app['destination'])
+                        );
+                    }
+                );
                 
                 $event->setTimezone(new \DateTimeZone('Asia/Jakarta'));
                 
@@ -80,7 +83,7 @@ class BackupComposerConsole extends Command
         }
         
         $scheduler->run();
-    
+        
         $output->writeln('');
         $output->writeln('<info>Backup done</info>');
     }
@@ -123,7 +126,8 @@ class BackupComposerConsole extends Command
                 function (SplFileInfo $a, SplFileInfo $b) {
                     return $b->getMTime() - $a->getMTime();
                 }
-            );
+            )
+            ;
             
             $i = 0;
             foreach ($files as $file) {
@@ -200,7 +204,14 @@ class BackupComposerConsole extends Command
         $language = new ExpressionLanguage();
         $path = realpath($path);
         $file = $language->evaluate($format, array_merge($params, ['now' => new \DateTime()]));
-        $file = sprintf('%s_%s_%s.%s', $params['app'], $params['engine'], $file, $params['ext']);
+        $file = sprintf(
+            '%s_%s_%s_%s.%s',
+            $params['app'],
+            $params['database'],
+            $params['engine'],
+            $file,
+            $params['ext']
+        );
         
         return $path . DIRECTORY_SEPARATOR . $file;
     }
