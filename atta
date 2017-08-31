@@ -13,6 +13,7 @@ $application->addCommands(
         new Atta\Console\MysqlWorkerConsole(),
         new Atta\Console\MongoWorkerConsole(),
         new Atta\Console\BackupComposerConsole(),
+        new Atta\Console\UpdateConsole(),
     ]
 );
 
