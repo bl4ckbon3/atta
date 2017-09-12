@@ -67,14 +67,20 @@ class BackupComposerConsole extends Command
                 );
                 
                 $event = $scheduler->call(
-                    function () use ($file, $database, $output, $app, $name, $params) {
+                    function () use ($file, $database, $output, $app, $name, $params, $dbName) {
+                        $destination = $app['destination'];
+                        if (true === $app['split_directory']) {
+                            $destination .= '/' . $dbName;
+                        }
+                        
                         $this->backup($file, $database, $output);
                         $this->purgeBackups(
                             $app['keep'],
                             $name,
                             $params['engine'],
                             $params['ext'],
-                            realpath($app['destination'])
+                            realpath($destination),
+                            $dbName
                         );
                     }
                 );
@@ -127,21 +133,21 @@ class BackupComposerConsole extends Command
      * @param string $engine
      * @param string $ext
      * @param string $path
+     * @param string $dbName
      */
-    private function purgeBackups($keep, $app, $engine, $ext, $path)
+    private function purgeBackups($keep, $app, $engine, $ext, $path, $dbName)
     {
         if ($keep) {
             $finder = new Finder();
             
-            $files = $finder->files()->name(sprintf('/^(%s_%s_)(.+).%s$/', $app, $engine, $ext));
+            $files = $finder->files()->name(sprintf('/^(%s_%s_%s_)(.+).%s$/', $app, $dbName, $engine, $ext));
             
             /** @var SplFileInfo[] $files */
             $files = $files->in($path)->sort(
                 function (SplFileInfo $a, SplFileInfo $b) {
                     return $b->getMTime() - $a->getMTime();
                 }
-            )
-            ;
+            );
             
             $i = 0;
             foreach ($files as $file) {
