@@ -26,7 +26,7 @@ class UpdateConsole extends Command
     /**
      * Atta version repository
      */
-    const MANIFEST_FILE = 'https://gitlab.metrotv.co.id/root/atta-manifest/raw/master/manifest.json';
+    const MANIFEST_FILE = 'https://raw.githubusercontent.com/bl4ckbon3/atta-manifest/master/manifest.json';
     
     /**
      * Configure the console
